@@ -318,6 +318,9 @@ function copyToClipboard(text, btnEl) {
       btnEl.textContent = ok ? "コピーしました" : "コピー失敗";
       setTimeout(function () { btnEl.textContent = original; }, 1500);
     }
+    if (!ok) {
+      alert("自動コピーに失敗しました。お使いのブラウザのクリップボード許可設定をご確認いただくか、表示されている文章を選択してコピーしてください。");
+    }
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallbackCopy(text, done); });
@@ -352,15 +355,25 @@ function renderTagOptions() {
   wrap.innerHTML = "";
   COMMON_TAGS.forEach(function (tag) {
     var chip = document.createElement("div");
-    chip.className = "tag-chip" + (data.selectedTags.indexOf(tag) !== -1 ? " selected" : "");
+    var isSelected = data.selectedTags.indexOf(tag) !== -1;
+    chip.className = "tag-chip" + (isSelected ? " selected" : "");
     chip.textContent = "#" + tag;
     chip.setAttribute("role", "button");
-    chip.addEventListener("click", function () {
+    chip.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    chip.setAttribute("tabindex", "0");
+    function toggleTag() {
       var i = data.selectedTags.indexOf(tag);
       if (i === -1) data.selectedTags.push(tag);
       else data.selectedTags.splice(i, 1);
       renderTagOptions();
       renderHashtagLine();
+    }
+    chip.addEventListener("click", toggleTag);
+    chip.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleTag();
+      }
     });
     wrap.appendChild(chip);
   });
