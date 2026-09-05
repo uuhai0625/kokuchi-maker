@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同人イベント 告知文・ハッシュタグメーカー(完全無料)</title>
+<style>
+  :root {
+    --accent: #3d8fb0;
+    --accent-dark: #276579;
+    --bg: #f4f9fb;
+    --card: #ffffff;
+    --border: #d9ecf2;
+    --text: #262d30;
+    --muted: #74848a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: #fff;
+    padding: 28px 20px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 8px; font-size: 22px; }
+  header p { margin: 0; font-size: 13px; opacity: 0.9; }
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .card h2 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 160px; margin-bottom: 10px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field input[type="text"], .field input[type="date"], .field textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .row input[type="text"] { flex: 1; }
+  .row button {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px 10px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .btn.ghost {
+    background: none;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn.small { padding: 6px 12px; font-size: 13px; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .template-box {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    background: var(--bg);
+  }
+  .template-box .templateText {
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .template-box .templateMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .tag-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .tag-chip {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    color: var(--text);
+  }
+  .tag-chip.selected {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .hashtag-line {
+    font-size: 14px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    word-break: break-all;
+    margin-bottom: 8px;
+    min-height: 20px;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+  }
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 24px 20px 40px;
+  }
+  footer a { color: var(--accent); }
+  @media print {
+    header, .btn-row, .no-print { display: none !important; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>同人イベント 告知文・ハッシュタグメーカー</h1>
+  <p>イベント名や頒布物を入れるだけで、X告知文の下書きとハッシュタグ案を自動生成(完全無料)</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>① 基本情報</h2>
+    <div class="field-row">
+      <div class="field">
+        <label for="eventName">イベント名</label>
+        <input type="text" id="eventName" placeholder="例: 〇〇即売会">
+      </div>
+      <div class="field">
+        <label for="eventDate">開催日(任意)</label>
+        <input type="date" id="eventDate">
+      </div>
+      <div class="field">
+        <label for="spaceNo">スペース番号(任意)</label>
+        <input type="text" id="spaceNo" placeholder="例: あ-12">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="circleName">サークル名</label>
+        <input type="text" id="circleName" placeholder="例: つきよみ堂">
+      </div>
+      <div class="field">
+        <label for="itemName">頒布物名</label>
+        <input type="text" id="itemName" placeholder="例: 星屑のレシピ(新刊)">
+      </div>
+    </div>
+    <div class="field">
+      <label for="catchCopy">一言・ジャンル紹介(任意)</label>
+      <textarea id="catchCopy" placeholder="例: オリジナルファンタジー漫画です"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>② 告知文(3パターン)</h2>
+    <div id="templateArea"></div>
+    <div class="note">
+      ※ 文字数はこのツールでの単純カウントです。X(旧Twitter)側の実際のカウント方式(絵文字・URL等の扱い)とは異なる場合があります。目安としてご利用ください。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>③ ハッシュタグ</h2>
+    <p style="font-size:13px; color:var(--muted); margin-top:0;">よく使われるタグをタップして選択(複数可)。イベント名・サークル名からも自動で候補を作ります。</p>
+    <div class="tag-options" id="tagOptions"></div>
+    <div class="field">
+      <label for="customTag">追加したいタグ(スペース区切りで複数可)</label>
+      <input type="text" id="customTag" placeholder="例: 創作クラスタ 女子部">
+    </div>
+    <div class="hashtag-line" id="hashtagLine"></div>
+    <div class="btn-row no-print">
+      <button class="btn ghost small" id="copyTagsBtn">タグをコピー</button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>入力内容は一切外部に送信されません(すべてブラウザ内で完結します)。</p>
+  <p>不具合・ご要望は BOOTHメッセージ、または X(Twitter) <a href="https://x.com/uuhai0625" target="_blank" rel="noopener">@uuhai0625</a> まで。</p>
+</footer>
+
+<script>
+function esc(s) {
+  return (s || "").toString().replace(/[<>&"']/g, function (c) {
+    return { "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+var COMMON_TAGS = ["同人誌", "即売会", "新刊", "サークル参加", "オリジナル", "創作", "pixiv", "BOOTH"];
+
+var data = {
+  eventName: "",
+  eventDate: "",
+  spaceNo: "",
+  circleName: "",
+  itemName: "",
+  catchCopy: "",
+  customTag: "",
+  selectedTags: []
+};
+
+function fmtDate(iso) {
+  if (!iso) return "";
+  var d = new Date(iso + "T00:00:00");
+  if (isNaN(d.getTime())) return "";
+  return (d.getMonth() + 1) + "月" + d.getDate() + "日";
+}
+
+function buildTemplates() {
+  var event = data.eventName || "○○即売会";
+  var space = data.spaceNo ? data.spaceNo : "";
+  var circle = data.circleName || "サークル名";
+  var item = data.itemName || "新刊";
+  var catchCopy = data.catchCopy || "";
+  var dateStr = fmtDate(data.eventDate);
+
+  var spacePhraseA = space ? "スペース" + space + "にて" : "";
+  var spacePhraseB = space ? "(" + space + ")" : "";
+  var datePhrase = dateStr ? dateStr + "、" : "";
+
+  var t1 = "【" + event + " 参加します】\n" +
+    datePhrase + spacePhraseA + "「" + circle + "」で『" + item + "』を頒布予定です。\n" +
+    (catchCopy ? catchCopy + "\n" : "") +
+    "お手数ですが遊びに来ていただけると嬉しいです!";
+
+  var t2 = event + spacePhraseB + "、" + circle + "です!\n" +
+    "『" + item + "』持って行きます🙌" +
+    (catchCopy ? "\n" + catchCopy : "") +
+    "\nよろしくお願いします!";
+
+  var t3 = datePhrase + event + "に「" + circle + "」として参加します。" +
+    (space ? "スペースは" + space + "です。" : "") +
+    "新刊『" + item + "』を頒布予定です。";
+
+  return [t1, t2, t3];
+}
+
+function renderTemplates() {
+  var wrap = document.getElementById("templateArea");
+  wrap.innerHTML = "";
+  buildTemplates().forEach(function (text, idx) {
+    var box = document.createElement("div");
+    box.className = "template-box";
+    box.innerHTML =
+      '<div class="templateText">' + esc(text) + '</div>' +
+      '<div class="templateMeta">' +
+      '<span>' + text.length + ' 文字</span>' +
+      '<button type="button" class="btn ghost small no-print copyTemplateBtn" data-idx="' + idx + '">コピー</button>' +
+      '</div>';
+    wrap.appendChild(box);
+  });
+  wrap.querySelectorAll(".copyTemplateBtn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var texts = buildTemplates();
+      copyToClipboard(texts[Number(btn.dataset.idx)], btn);
+    });
+  });
+}
+
+function copyToClipboard(text, btnEl) {
+  function done(ok) {
+    if (btnEl) {
+      var original = btnEl.textContent;
+      btnEl.textContent = ok ? "コピーしました" : "コピー失敗";
+      setTimeout(function () { btnEl.textContent = original; }, 1500);
+    }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallbackCopy(text, done); });
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+
+function fallbackCopy(text, done) {
+  try {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    done(ok);
+  } catch (e) {
+    done(false);
+  }
+}
+
+function slugifyTag(s) {
+  return (s || "").replace(/[\s#　]/g, "");
+}
+
+function renderTagOptions() {
+  var wrap = document.getElementById("tagOptions");
+  wrap.innerHTML = "";
+  COMMON_TAGS.forEach(function (tag) {
+    var chip = document.createElement("div");
+    chip.className = "tag-chip" + (data.selectedTags.indexOf(tag) !== -1 ? " selected" : "");
+    chip.textContent = "#" + tag;
+    chip.setAttribute("role", "button");
+    chip.addEventListener("click", function () {
+      var i = data.selectedTags.indexOf(tag);
+      if (i === -1) data.selectedTags.push(tag);
+      else data.selectedTags.splice(i, 1);
+      renderTagOptions();
+      renderHashtagLine();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+function renderHashtagLine() {
+  var tags = data.selectedTags.slice();
+  var eventTag = slugifyTag(data.eventName);
+  if (eventTag) tags.push(eventTag);
+  var circleTag = slugifyTag(data.circleName);
+  if (circleTag) tags.push(circleTag);
+  var customTags = (data.customTag || "").split(/[\s　]+/).map(slugifyTag).filter(function (t) { return t; });
+  tags = tags.concat(customTags);
+  tags = tags.filter(function (t, i) { return t && tags.indexOf(t) === i; });
+  var line = tags.map(function (t) { return "#" + t; }).join(" ");
+  document.getElementById("hashtagLine").textContent = line || "(タグを選択すると表示されます)";
+}
+
+document.getElementById("eventName").addEventListener("input", function (e) { data.eventName = e.target.value; renderTemplates(); renderHashtagLine(); });
+document.getElementById("eventDate").addEventListener("input", function (e) { data.eventDate = e.target.value; renderTemplates(); });
+document.getElementById("spaceNo").addEventListener("input", function (e) { data.spaceNo = e.target.value; renderTemplates(); });
+document.getElementById("circleName").addEventListener("input", function (e) { data.circleName = e.target.value; renderTemplates(); renderHashtagLine(); });
+document.getElementById("itemName").addEventListener("input", function (e) { data.itemName = e.target.value; renderTemplates(); });
+document.getElementById("catchCopy").addEventListener("input", function (e) { data.catchCopy = e.target.value; renderTemplates(); });
+document.getElementById("customTag").addEventListener("input", function (e) { data.customTag = e.target.value; renderHashtagLine(); });
+
+document.getElementById("copyTagsBtn").addEventListener("click", function () {
+  var line = document.getElementById("hashtagLine").textContent;
+  copyToClipboard(line, document.getElementById("copyTagsBtn"));
+});
+
+renderTemplates();
+renderTagOptions();
+renderHashtagLine();
+</script>
+
+</body>
+</html>
